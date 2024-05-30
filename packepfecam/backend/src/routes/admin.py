@@ -61,8 +61,12 @@ async def generate_api_key():
 @router.get("/get-response-by-api-key")
 async def get_response_by_api_key(api_key: str = Security(get_api_key)):
     try:
-        response = await VideoResponse.find_one(VideoResponse.api_key == api_key)
-        return {"response":response}
+        # Fetch the data from the database
+        response = await VideoResponse.find(VideoResponse.api_key == api_key).to_list()
+
+        # Convert the database objects to the Pydantic model
+        # response_data = [VideoResponse.from_orm(res) for res in response]
+
+        return response
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
-    
